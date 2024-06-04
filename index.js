@@ -34,3 +34,34 @@ const parseMarkdown = (markdown) => {
 
     return html.replace(/<p>\s*<\/p>/g, '').trim();
 };
+const main = () => {
+    if (process.argv.length < 3) {
+        console.error('Usage: node index.js <input-file> [--out <output-file>]');
+        process.exit(1);
+    }
+
+    const inputFilePath = process.argv[2];
+    const outputFlagIndex = process.argv.indexOf('--out');
+    const outputFilePath = outputFlagIndex > -1 ? process.argv[outputFlagIndex + 1] : null;
+
+    if (!fs.existsSync(inputFilePath)) {
+        console.error(`Error: File not found: ${inputFilePath}`);
+        process.exit(1);
+    }
+
+    const markdown = fs.readFileSync(inputFilePath, 'utf8');
+
+    try {
+        const html = '<p>' + parseMarkdown(markdown) + '</p>';
+        if (outputFilePath) {
+            fs.writeFileSync(outputFilePath, html, 'utf8');
+        } else {
+            console.log(html);
+        }
+    } catch (error) {
+        console.error(`Error: ${error.message}`);
+        process.exit(1);
+    }
+};
+
+main();
